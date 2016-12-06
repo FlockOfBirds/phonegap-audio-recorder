@@ -1,0 +1,17 @@
+.widget-audio-recorder .btn{
+    border-color: #2db2df;
+    background-color: #2db2df;
+    color: #FFF;
+}
+
+.widget-audio-recorder > .btn.recording {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+
+.widget-audio-recorder > .btn.processing {
+    border-color: #264626;
+    background-color: #264626;
+    color: #FFF;
+}
