@@ -1,0 +1,11 @@
+test/
+test/javasource/
+test/deployment/
+test/.classpath
+test/.project
+*.launch
+*.tmp
+*.lock
+*.bak
+.idea/
+*DS_Store*

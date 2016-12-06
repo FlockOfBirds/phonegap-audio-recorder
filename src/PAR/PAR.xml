@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget id="PAR.widget.PAR" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
+    <name>PAR</name>
+    <description>Creates a button to use the audio recorder functionality</description>
+
+    <icon />
+
+    <phonegap enabled="true"/>
+    <properties>
+        <property key="buttonLabel" type="string" required="true">
+            <caption>Label</caption>
+            <category>Button</category>
+            <description></description>
+        </property>
+        <property key="buttonClass" type="string" required="false">
+            <caption>Class</caption>
+            <category>Button</category>
+            <description></description>
+        </property>
+        <property key="onchangemf" type="microflow" required="false">
+            <caption>On change microflow</caption>
+            <category>Events</category>
+            <description></description>
+            <returnType type="Void"/>
+        </property>
+    </properties>
+</widget>
+
