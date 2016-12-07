@@ -1,8 +1,8 @@
 define([
     "mxui/widget/_WidgetBase", "mxui/dom", "dojo/dom-class",
     "dojo/_base/declare", "dojo/_base/lang", "dojo/touch",
-    "AudioRecorder/widget/Audio"
-], function(_WidgetBase, mxuiDom, dojoClass, declare, dojoLang, touch, Audio) {
+    "AudioRecorder/widget/Audio", "AudioRecorder/widget/Upload"
+], function(_WidgetBase, mxuiDom, dojoClass, declare, dojoLang, touch, Audio, Upload) {
     "use strict";
 
     // Declare widget"s prototype.
@@ -18,12 +18,14 @@ define([
         _recordingStarted: false,
         _leaveHandler: null,
         _audio: null,
+        testFile: null,
 
         startup: function() {
             logger.debug(this.id + ".startup");
             if (this._hasStarted) {
                 return;
             }
+            this.testFile = null;
             this._audio = new Audio();
             this._createChildNodes();
             this._setupEvents();
@@ -73,6 +75,11 @@ define([
                 dojoClass.add(this._button, "processing");
                 this._audio.stopRecording();
                 this._audio.playRecording();
+                var testUrl = this._audio.getUrl(),
+                    upload = new Upload();
+                upload.sendFile(this._contextObject.getGuid(), testUrl, function() {
+                    logger.debug("Upload completed");
+                });
                 dojoClass.remove(this._button, "processing");
                 this._executeMicroflow();
             }
