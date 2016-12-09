@@ -40,20 +40,25 @@ define([
         _setupEvents: function() {
             logger.debug(this.id + "._setupEvents");
             this.connect(this._button, touch.press, dojoLang.hitch(this, function() { // "mousedown"
+                //creates a file with name "myRecording.txt"
+                var textFile = "myTextFile.txt";
+                this._audio.createFile(textFile);
+                this._audio.readFile(textFile);
+
                 this._startRecording();
-                this._leaveHandler = this.connect(this._button, touch.leave, dojoLang.hitch(this, function() { // "mouseleave"
-                    if (this._leaveHandler) {
-                        this._leaveHandler.remove();
-                        this._leaveHandler = null;
-                    }
-                    this._cancelRecording();
-                }));
+                // this._leaveHandler = this.connect(this._button, touch.leave, dojoLang.hitch(this, function() { // "mouseleave"
+                //     if (this._leaveHandler) {
+                //         this._leaveHandler.remove();
+                //         this._leaveHandler = null;
+                //     }
+                //     this._cancelRecording();
+                // }));
             }));
             this.connect(this._button, touch.release, dojoLang.hitch(this, function() { // "mouseup"
-                if (this._leaveHandler) {
-                    this._leaveHandler.remove();
-                    this._leaveHandler = null;
-                }
+                // if (this._leaveHandler) {
+                //     this._leaveHandler.remove();
+                //     this._leaveHandler = null;
+                // }
                 this._stopRecording();
             }));
         },

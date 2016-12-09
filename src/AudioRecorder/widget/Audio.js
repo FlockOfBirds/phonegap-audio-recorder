@@ -4,7 +4,8 @@ define([ "dojo/_base/declare" ], function(declare) {
     // Declare widget's prototype.
     return declare("AudioRecorder.widget.Audio", [], {
         localMedia: null,
-        audioSrc: "myRecording.wav",
+        audioSrc: "myRecording.amr",
+        textFile: "textFile.txt",
         fileCallback: null,
         // The function to record audio file
         startRecording: function() {
@@ -21,18 +22,21 @@ define([ "dojo/_base/declare" ], function(declare) {
 
         stopRecording: function() {
             this.localMedia.stopRecord();
-            // The function to read file and get base64
-            // this.fileCallback = callback; // This is bad, TODO fix this!
-            // this.getAudioBase();
         },
 
         playRecording: function() {
-            this.localMedia.play();
+            // this.localMedia.play();
+            var url = cordova.file.externalRootDirectory + this.audioSrc;
+            var myMedia = new Media(url, 
+                function () { console.log("playAudio():Audio Success"); },
+                function (err) { console.log("playAudio():Audio Error: " + err); }
+            );
+            myMedia.play();
         },
 
         cancelRecording: function() {
-            this._mediaRecorder.stopRecord();
-            this._mediaRecorder.release();
+            this.localMedia.stopRecord();
+            this.localMedia.release();
         },
 
         onSuccessRecord: function() {
@@ -41,43 +45,34 @@ define([ "dojo/_base/declare" ], function(declare) {
 
         onErrorRecord: function(error) {
             logger.error("onErrorRecord", error);
+        },
+
+        createFile: function(fileName) { 
+            this.textFile = fileName;
+            var that = this, data = "date today is ["+ (new Date())+"]";
+            window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function(dir) {
+                dir.getFile(that.textFile, {create:true}, function(file) {
+                    file.createWriter(function(fileWriter) {
+                        var blob = new Blob([data], { type: 'text/plain' });
+                        fileWriter.write(blob);
+                    });
+                });
+            });
+        },
+
+        readFile: function(fileName){
+            window.resolveLocalFileSystemURL(cordova.file.dataDirectory+fileName, function(fileEntry) {
+                console.log("got main dir",fileEntry);
+                fileEntry.file(function(file) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        console.log("end of file reading");
+                        console.log("this.result is", reader.result);
+                    };
+                    reader.readAsText(file);
+                });
+            });
         }
 
-        // // File reading
-        // getAudioBase: function() {
-        //     window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, this.gotFileSystem.bind(this), this.fileFail.bind(this));
-        // },
-
-        // gotFileSystem: function(fileSystem) {
-        //     fileSystem.root.getFile(this.audioSrc, {
-        //         create: false, exclusive: false
-        //     }, this.gotFileEntry.bind(this), this.fileFail.bind(this));
-        // },
-
-        // gotFileEntry: function(fileEntry) {
-        //     fileEntry.file(this.gotFile.bind(this), this.fileFail.bind(this));
-        // },
-
-        // gotFile: function(file) {
-        //     file.type = "audio/wav";
-        //     if (this.fileCallback) {
-        //         this.fileCallback(file);
-        //     }
-        //     // this.readAsDataURL(file);
-        // },
-
-        // readAsDataURL: function(file) {
-        //     logger.debug("reading as url");
-        //     var reader = new FileReader();
-        //     reader.onloadend = function(evt) {
-        //         logger.debug("Read as data url");
-        //         logger.debug("base64 of audio " + evt.target.result);
-        //     };
-        //     reader.readAsDataURL(file);
-        // },
-
-        // fileFail: function(error) {
-        //     logger.error(error.code);
-        // }
     });
 });
