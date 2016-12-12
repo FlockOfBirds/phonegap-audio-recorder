@@ -4,15 +4,27 @@ define([ "dojo/_base/declare" ], function(declare) {
     // Declare widget's prototype.
     return declare("AudioRecorder.widget.Audio", [], {
         localMedia: null,
-        audioSrc: "myRecording.wav",
+        fileName: "Recording_{date}",
+        fileExtension: "wav",
+        audioSrc: "",
         fileCallback: null,
-        // The function to record audio file
+
         startRecording: function() {
-            if (this.localMedia) {
-                this.localMedia.release();
-            }
-            this.localMedia = new Media(this.audioSrc, this.onSuccessRecord.bind(this), this.onErrorRecord.bind(this), this.logStatus);
+            // if (this.localMedia) {
+            //     this.localMedia.release();
+            // }
+            this.audioSrc = this.fileName.replace("{date}", Date.now()) + "." + this.getExtension();
+            this.localMedia = new Media(this.audioSrc,
+                this.onSuccessRecord.bind(this),
+                this.onErrorRecord.bind(this),
+                this.logStatus
+            );
             this.localMedia.startRecord();
+        },
+
+        getExtension: function() {
+            // TODO OS Depended return.
+            return this.fileExtension;
         },
 
         logStatus: function(status) {
@@ -20,14 +32,20 @@ define([ "dojo/_base/declare" ], function(declare) {
         },
 
         stopRecording: function() {
-            this.localMedia.stopRecord();
-            // The function to read file and get base64
-            // this.fileCallback = callback; // This is bad, TODO fix this!
-            // this.getAudioBase();
+            if (this.localMedia) {
+                this.localMedia.stopRecord();
+                this.localMedia.release();
+            }
         },
 
         getUrl: function() {
-            return cordova.file.externalRootDirectory + this.audioSrc;
+            if (device.platform === "iOS") {
+                return cordova.file.tempDirectory + this.audioSrc;
+            }
+            if (device.platform === "Android") {
+                return cordova.file.externalRootDirectory + this.audioSrc;
+            }
+            return this.audioSrc;
         },
 
         playRecording: function() {
@@ -35,10 +53,7 @@ define([ "dojo/_base/declare" ], function(declare) {
         },
 
         cancelRecording: function() {
-            if (this._mediaRecorder) {
-                this._mediaRecorder.stopRecord();
-                this._mediaRecorder.release();
-            }
+            this.stopRecording();
         },
 
         onSuccessRecord: function() {
@@ -47,6 +62,7 @@ define([ "dojo/_base/declare" ], function(declare) {
 
         onErrorRecord: function(error) {
             logger.error("onErrorRecord", error);
+            // TODO UI output
         }
     });
 });

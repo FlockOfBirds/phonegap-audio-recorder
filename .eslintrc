@@ -73,7 +73,6 @@
         "prefer-spread": "off",
         "prefer-template": "off",
         "array-bracket-spacing": [ "error", "always" ],
-        "no-bitwise": [ "error", { "allow": [ "&" ] } ], // only for Hammer JS
         "no-new": "off",
         "sort-keys": "off",
         "consistent-this": "off",
@@ -91,6 +90,7 @@
         "module": true,
         "cordova": true,
         "Media": true,
-        "LocalFileSystem": true
+        "LocalFileSystem": true,
+        "device": true
     }
 }

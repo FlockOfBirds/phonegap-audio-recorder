@@ -10,7 +10,7 @@ define([
         // Modeler properties
         buttonLabel: "",
         buttonClass: "",
-        onChangeMicroflow: "",
+        onChangeMicroflow: "", // TODO Rename
         // Internal properties
         _hasStarted: false,
         _contextObject: null,
@@ -18,14 +18,12 @@ define([
         _recordingStarted: false,
         _leaveHandler: null,
         _audio: null,
-        testFile: null,
 
         startup: function() {
             logger.debug(this.id + ".startup");
             if (this._hasStarted) {
                 return;
             }
-            this.testFile = null;
             this._audio = new Audio();
             this._createChildNodes();
             this._setupEvents();
@@ -41,13 +39,12 @@ define([
 
         _setupEvents: function() {
             logger.debug(this.id + "._setupEvents");
+            // TODO cordova check, with UI message that audio recording is not available
             this.connect(this._button, touch.press, dojoLang.hitch(this, function() { // "mousedown"
                 this._startRecording();
                 this._leaveHandler = this.connect(this._button, touch.leave, dojoLang.hitch(this, function() { // "mouseleave"
-                    if (this._leaveHandler) {
-                        this._leaveHandler.remove();
-                        this._leaveHandler = null;
-                    }
+                    this._leaveHandler.remove();
+                    this._leaveHandler = null;
                     this._cancelRecording();
                 }));
             }));
@@ -74,14 +71,16 @@ define([
                 dojoClass.remove(this._button, "recording");
                 dojoClass.add(this._button, "processing");
                 this._audio.stopRecording();
-                this._audio.playRecording();
+                this._audio.playRecording(); // For testing only
                 var testUrl = this._audio.getUrl(),
                     upload = new Upload();
                 upload.sendFile(this._contextObject.getGuid(), testUrl, function() {
                     logger.debug("Upload completed");
+                    this._executeMicroflow(function() {
+                        // TODO Test callback
+                        dojoClass.remove(this._button, "processing");
+                    });
                 });
-                dojoClass.remove(this._button, "processing");
-                this._executeMicroflow();
             }
         },
 
@@ -90,14 +89,16 @@ define([
             this._recordingStarted = false;
             this._audio.cancelRecording();
             dojoClass.remove(this._button, "recording");
+            // TODO add class "recording-canceled" for 2 seconds
         },
 
-        _executeMicroflow: function() {
+        _executeMicroflow: function(callback) {
             logger.debug(this.id + "._executeMicroflow", this.onChangeMicroflow);
             if (this.onChangeMicroflow && this._contextObject) {
                 mx.ui.action(this.onChangeMicroflow, {
                     params: {
                         applyto: "selection",
+                        callback: callback,
                         guids: [ this._contextObject.getGuid() ]
                     }
                 });
@@ -105,6 +106,7 @@ define([
         },
 
         _createChildNodes: function() {
+            // Reuse "mxui.widget._Button", use button.domNode for touch events (not onClick)
             logger.debug(this.id + "._createChildNodes");
             dojoClass.add(this.domNode, "widget-audio-recorder");
             this._button = mxuiDom.create("div", {

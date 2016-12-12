@@ -2,7 +2,7 @@ define([ "dojo/_base/declare" ], function(declare) {
     "use strict";
 
     return declare("AudioRecorder.widget.Upload", [], {
-        // Should split in multiple functions, not nested 10 deep.
+        // TODO Should split in multiple functions, not nested 10 deep.
         sendFile: function(guid, fileUrl, callback) {
             logger.debug(this.id + "._sendFile");
             var self = this,
@@ -31,7 +31,7 @@ define([ "dojo/_base/declare" ], function(declare) {
                     }, self.error);
                 }, self.error);
             } else {
-                logger.error("Upload file not supported ");
+                logger.error("Upload file not supported.");
             }
         },
 
