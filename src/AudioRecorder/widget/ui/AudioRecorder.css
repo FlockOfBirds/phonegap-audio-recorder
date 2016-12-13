@@ -1,22 +1,22 @@
-.widget-audio-recorder .btn{
+.widget-audio-recorder.btn {
     border-color: #2db2df;
     background-color: #2db2df;
     color: #FFF;
 }
 
-.widget-audio-recorder > .btn.recording {
+.widget-audio-recorder.btn.recording {
     color: #fff;
     background-color: #5cb85c;
     border-color: #4cae4c;
 }
 
-.widget-audio-recorder > .btn.processing {
+.widget-audio-recorder.btn.processing {
     border-color: #264626;
     background-color: #264626;
     color: #FFF;
 }
 
-.widget-audio-recorder > .btn.recording-canceled {
+.widget-audio-recorder.btn.recording-canceled {
     border-color: #cc3300;
     background-color: #ff6633;
     color: #FFF;

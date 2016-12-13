@@ -1,8 +1,8 @@
 define([
     "mxui/widget/_WidgetBase", "mxui/dom", "dojo/dom-class",
     "dojo/_base/declare", "dojo/_base/lang", "dojo/touch",
-    "AudioRecorder/widget/Audio", "AudioRecorder/widget/Upload"
-], function(_WidgetBase, mxuiDom, dojoClass, declare, dojoLang, touch, Audio, Upload) {
+    "AudioRecorder/widget/Audio", "AudioRecorder/widget/Upload", "mxui/widget/_Button"
+], function(_WidgetBase, mxuiDom, dojoClass, declare, dojoLang, touch, Audio, Upload, Button) {
     "use strict";
 
     // Declare widget"s prototype.
@@ -14,19 +14,31 @@ define([
         // Internal properties
         _hasStarted: false,
         _contextObject: null,
-        _button: null,
+        _buttonNode: null,
         _recordingStarted: false,
         _leaveHandler: null,
         _audio: null,
-        _cancelAnimationTime: 1000,
+        _cancelAnimationTime: 1500,
+        _button: null,
+        _widgetCssClass: "widget-audio-recorder",
 
-        startup: function() {
-            logger.debug(this.id + ".startup");
-            if (this._hasStarted) {
-                return;
-            }
+        buildRendering: function() {
+            logger.debug(this.id + ".buildRendering");
+            // TODO Add other options to Model config.
+            this._button = new Button({
+                renderType: "button",
+                caption: this.buttonLabel,
+                iconUrl: "",
+                iconClass: "",
+                cssClasses: this._widgetCssClass + " " + this.buttonClass,
+                cssStyle: ""
+            });
+            this.domNode = this._button.domNode;
+        },
+
+        postCreate: function() {
+            logger.debug(this.id + ".postCreate");
             this._audio = new Audio();
-            this._createChildNodes();
             this._setupEvents();
         },
 
@@ -40,16 +52,15 @@ define([
 
         _setupEvents: function() {
             logger.debug(this.id + "._setupEvents");
-            // TODO cordova check, with UI message that audio recording is not available
-            this.connect(this._button, touch.press, dojoLang.hitch(this, function() { // "mousedown"
+            this.connect(this.domNode, touch.press, dojoLang.hitch(this, function() { // "mousedown"
                 this._startRecording();
-                this._leaveHandler = this.connect(this._button, touch.leave, dojoLang.hitch(this, function() { // "mouseleave"
+                this._leaveHandler = this.connect(this.domNode, touch.leave, dojoLang.hitch(this, function() { // "mouseleave"
                     this._leaveHandler.remove();
                     this._leaveHandler = null;
                     this._cancelRecording();
                 }));
             }));
-            this.connect(this._button, touch.release, dojoLang.hitch(this, function() { // "mouseup"
+            this.connect(this.domNode, touch.release, dojoLang.hitch(this, function() { // "mouseup"
                 if (this._leaveHandler) {
                     this._leaveHandler.remove();
                     this._leaveHandler = null;
@@ -62,7 +73,7 @@ define([
             logger.debug(this.id + "._startRecording");
             if (this._testSupport()) {
                 this._recordingStarted = true;
-                dojoClass.add(this._button, "recording");
+                dojoClass.add(this.domNode, "recording");
                 this._audio.startRecording();
             }
         },
@@ -83,19 +94,20 @@ define([
             if (this._recordingStarted) {
                 logger.debug(this.id + "._endRecording");
                 this._recordingStarted = false;
-                dojoClass.remove(this._button, "recording");
-                dojoClass.add(this._button, "processing");
+                dojoClass.remove(this.domNode, "recording");
+                dojoClass.add(this.domNode, "processing");
                 this._audio.stopRecording();
                 this._audio.playRecording(); // For testing only
+
                 var testUrl = this._audio.getUrl(),
                     upload = new Upload();
-                upload.sendFile(this._contextObject.getGuid(), testUrl, function() {
+                upload.sendFile(this._contextObject.getGuid(), testUrl, dojoLang.hitch(this, function() {
                     logger.debug("Upload completed");
-                    this._executeMicroflow(function() {
-                        // TODO Test callback
-                        dojoClass.remove(this._button, "processing");
-                    });
-                });
+                    this._executeMicroflow(dojoLang.hitch(this, function() {
+                        logger.debug("executed Microflow");
+                        dojoClass.remove(this.domNode, "processing");
+                    }));
+                }));
             }
         },
 
@@ -103,11 +115,11 @@ define([
             logger.debug(this.id + "._cancelRecording");
             this._recordingStarted = false;
             this._audio.cancelRecording();
-            dojoClass.remove(this._button, "recording");
+            dojoClass.remove(this.domNode, "recording");
 
-            dojoClass.add(this._button, "recording-canceled");
+            dojoClass.add(this.domNode, "recording-canceled");
             setTimeout(dojoLang.hitch(this, function() {
-                dojoClass.remove(this._button, "recording-canceled");
+                dojoClass.remove(this.domNode, "recording-canceled");
             }), this._cancelAnimationTime);
         },
 
@@ -117,26 +129,11 @@ define([
                 mx.ui.action(this.onChangeMicroflow, {
                     params: {
                         applyto: "selection",
-                        callback: callback,
                         guids: [ this._contextObject.getGuid() ]
-                    }
+                    },
+                    callback: callback
                 });
             }
-        },
-
-        _createChildNodes: function() {
-            // Reuse "mxui.widget._Button", use button.domNode for touch events (not onClick)
-            logger.debug(this.id + "._createChildNodes");
-            dojoClass.add(this.domNode, "widget-audio-recorder");
-            this._button = mxuiDom.create("div", {
-                class: "widget-recorder-button btn"
-            });
-            if (this.buttonClass) {
-                dojoClass.add(this._button, this.buttonClass);
-            }
-            this._button.textContent = this.buttonLabel || "Record Audio";
-
-            this.domNode.appendChild(this._button);
         }
     });
 });
