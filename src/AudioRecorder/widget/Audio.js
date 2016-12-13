@@ -1,7 +1,6 @@
 define([ "dojo/_base/declare" ], function(declare) {
     "use strict";
 
-    // Declare widget's prototype.
     var Audio = declare("AudioRecorder.widget.Audio", [], {
         localMedia: null,
         fileName: "Recording_{date}",
@@ -10,9 +9,6 @@ define([ "dojo/_base/declare" ], function(declare) {
         fileCallback: null,
 
         startRecording: function() {
-            // if (this.localMedia) {
-            //     this.localMedia.release();
-            // }
             this.audioSrc = this.fileName.replace("{date}", Date.now()) + "." + this.getExtension();
             this.localMedia = new Media(this.audioSrc,
                 this.onSuccessRecord.bind(this),
@@ -23,7 +19,6 @@ define([ "dojo/_base/declare" ], function(declare) {
         },
 
         getExtension: function() {
-            // TODO OS Depended return.
             return this.fileExtension;
         },
 
@@ -62,7 +57,7 @@ define([ "dojo/_base/declare" ], function(declare) {
 
         onErrorRecord: function(error) {
             logger.error("onErrorRecord", error);
-            // TODO UI output
+            window.mx.ui.error("Audio: error on audio recording, code " + error.code, true);
         }
     });
 
