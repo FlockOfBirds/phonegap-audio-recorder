@@ -104,7 +104,11 @@ define([
             this._recordingStarted = false;
             this._audio.cancelRecording();
             dojoClass.remove(this._button, "recording");
-            // TODO add class "recording-canceled" for 2 seconds
+
+            dojoClass.add(this._button, "recording-canceled");
+            setTimeout(dojoLang.hitch(this, function() {
+                dojoClass.remove(this._button, "recording-canceled");
+            }), this._cancelAnimationTime);
         },
 
         _executeMicroflow: function(callback) {
