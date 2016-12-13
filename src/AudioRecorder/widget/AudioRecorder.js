@@ -10,7 +10,7 @@ define([
         // Modeler properties
         buttonLabel: "",
         buttonClass: "",
-        onChangeMicroflow: "", // TODO Rename
+        onSaveMicroflow: "",
         // Internal properties
         _hasStarted: false,
         _contextObject: null,
@@ -124,9 +124,9 @@ define([
         },
 
         _executeMicroflow: function(callback) {
-            logger.debug(this.id + "._executeMicroflow", this.onChangeMicroflow);
-            if (this.onChangeMicroflow && this._contextObject) {
-                mx.ui.action(this.onChangeMicroflow, {
+            logger.debug(this.id + "._executeMicroflow", this.onSaveMicroflow);
+            if (this.onSaveMicroflow && this._contextObject) {
+                mx.ui.action(this.onSaveMicroflow, {
                     params: {
                         applyto: "selection",
                         guids: [ this._contextObject.getGuid() ]

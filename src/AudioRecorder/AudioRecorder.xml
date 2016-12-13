@@ -15,8 +15,8 @@
             <category>Button</category>
             <description/>
         </property>
-        <property key="onChangeMicroflow" type="microflow" required="false">
-            <caption>Process microflow</caption>
+        <property key="onSaveMicroflow" type="microflow" required="false">
+            <caption>Save microflow</caption>
             <category>Events</category>
             <description/>
             <returnType type="Void"/>
