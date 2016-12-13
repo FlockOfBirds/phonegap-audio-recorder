@@ -1,7 +1,7 @@
 define([ "dojo/_base/declare" ], function(declare) {
     "use strict";
 
-    return declare("AudioRecorder.widget.Upload", [], {
+    var Upload = declare("AudioRecorder.widget.Upload", [], {
         // TODO Should split in multiple functions, not nested 10 deep.
         sendFile: function(guid, fileUrl, callback) {
             logger.debug(this.id + "._sendFile");
@@ -40,4 +40,10 @@ define([ "dojo/_base/declare" ], function(declare) {
             window.mx.ui.error("Uploading audio failed with error code " + uploadError.code);
         }
     });
+
+    Upload.testSupport = function() {
+        return window.mx.data.saveDocument && window.mx.data.saveDocument.length === 6;
+    };
+
+    return Upload;
 });

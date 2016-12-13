@@ -15,3 +15,9 @@
     background-color: #264626;
     color: #FFF;
 }
+
+.widget-audio-recorder > .btn.recording-canceled {
+    border-color: #cc3300;
+    background-color: #ff6633;
+    color: #FFF;
+}

@@ -18,6 +18,7 @@ define([
         _recordingStarted: false,
         _leaveHandler: null,
         _audio: null,
+        _cancelAnimationTime: 1000,
 
         startup: function() {
             logger.debug(this.id + ".startup");
@@ -59,9 +60,23 @@ define([
 
         _startRecording: function() {
             logger.debug(this.id + "._startRecording");
-            this._recordingStarted = true;
-            dojoClass.add(this._button, "recording");
-            this._audio.startRecording();
+            if (this._testSupport()) {
+                this._recordingStarted = true;
+                dojoClass.add(this._button, "recording");
+                this._audio.startRecording();
+            }
+        },
+
+        _testSupport: function() {
+            if (!Audio.testSupport()) {
+                window.mx.ui.warning("AudioRecorder: Audio recording is not supported", true);
+                return false;
+            }
+            if (!Upload.testSupport()) {
+                window.mx.ui.warning("AudioRecorder: File upload is not supported", true);
+                return false;
+            }
+            return true;
         },
 
         _stopRecording: function() {

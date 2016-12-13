@@ -2,7 +2,7 @@ define([ "dojo/_base/declare" ], function(declare) {
     "use strict";
 
     // Declare widget's prototype.
-    return declare("AudioRecorder.widget.Audio", [], {
+    var Audio = declare("AudioRecorder.widget.Audio", [], {
         localMedia: null,
         fileName: "Recording_{date}",
         fileExtension: "wav",
@@ -65,4 +65,10 @@ define([ "dojo/_base/declare" ], function(declare) {
             // TODO UI output
         }
     });
+
+    Audio.testSupport = function() {
+        return typeof (cordova) !== "undefined" && typeof (Media) !== "undefined";
+    };
+
+    return Audio;
 });
