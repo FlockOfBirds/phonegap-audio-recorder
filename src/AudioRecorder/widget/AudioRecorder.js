@@ -11,6 +11,10 @@ define([
         buttonLabel: "",
         buttonClass: "",
         onSaveMicroflow: "",
+        // Internal settings
+        _cancelAnimationTime: 1500,
+        _minimalRecordingTime: 200,
+        _vibrationTime: 50,
         // Internal properties
         _hasStarted: false,
         _contextObject: null,
@@ -18,7 +22,6 @@ define([
         _recordingStarted: false,
         _leaveHandler: null,
         _audio: null,
-        _cancelAnimationTime: 1500,
         _button: null,
         _widgetCssClass: "widget-audio-recorder",
 
@@ -72,6 +75,7 @@ define([
         _startRecording: function() {
             logger.debug(this.id + "._startRecording");
             if (this._testSupport()) {
+                navigator.vibrate(this._vibrationTime);
                 this._recordingStarted = true;
                 dojoClass.add(this.domNode, "recording");
                 this._audio.startRecording();
@@ -95,19 +99,22 @@ define([
                 logger.debug(this.id + "._endRecording");
                 this._recordingStarted = false;
                 dojoClass.remove(this.domNode, "recording");
-                dojoClass.add(this.domNode, "processing");
                 this._audio.stopRecording();
-                this._audio.playRecording(); // For testing only
-
-                var testUrl = this._audio.getUrl(),
-                    upload = new Upload();
-                upload.sendFile(this._contextObject.getGuid(), testUrl, dojoLang.hitch(this, function() {
-                    logger.debug("Upload completed");
-                    this._executeMicroflow(dojoLang.hitch(this, function() {
-                        logger.debug("executed Microflow");
-                        dojoClass.remove(this.domNode, "processing");
+                if (this._audio.getDuration() > this._minimalRecordingTime) {
+                    dojoClass.add(this.domNode, "processing");
+                    // this._audio.playRecording(); // For testing only
+                    var testUrl = this._audio.getUrl(),
+                        upload = new Upload();
+                    upload.sendFile(this._contextObject.getGuid(), testUrl, dojoLang.hitch(this, function() {
+                        logger.debug("Upload completed");
+                        this._executeMicroflow(dojoLang.hitch(this, function() {
+                            logger.debug("executed Microflow");
+                            dojoClass.remove(this.domNode, "processing");
+                        }));
                     }));
-                }));
+                } else {
+                    logger.debug("Recording to short " + this._audio.getDuration() + "ms " + this._minimalRecordingTime)
+                }
             }
         },
 

@@ -7,14 +7,17 @@ define([ "dojo/_base/declare" ], function(declare) {
         fileExtension: "wav",
         audioSrc: "",
         fileCallback: null,
+        _duration: 0,
+        _startTime: 0,
 
         startRecording: function() {
             this.audioSrc = this.fileName.replace("{date}", Date.now()) + "." + this.getExtension();
             this.localMedia = new Media(this.audioSrc,
                 this.onSuccessRecord.bind(this),
                 this.onErrorRecord.bind(this),
-                this.logStatus
+                this.setMediaStatus.bind(this)
             );
+            this._startTime = Date.now();
             this.localMedia.startRecord();
         },
 
@@ -22,15 +25,25 @@ define([ "dojo/_base/declare" ], function(declare) {
             return this.fileExtension;
         },
 
-        logStatus: function(status) {
+        setMediaStatus: function(status) {
             logger.debug("mediaStatus :" + status);
         },
 
         stopRecording: function() {
+            logger.debug("stopRecording");
+            if (this._startTime) {
+                this._duration = Date.now() - this._startTime;
+            }
             if (this.localMedia) {
                 this.localMedia.stopRecord();
                 this.localMedia.release();
+                return true;
             }
+            return false;
+        },
+
+        getDuration: function() {
+            return this._duration;
         },
 
         getUrl: function() {
