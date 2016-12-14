@@ -113,7 +113,7 @@ define([
                         }));
                     }));
                 } else {
-                    logger.debug("Recording to short " + this._audio.getDuration() + "ms " + this._minimalRecordingTime)
+                    logger.debug("Recording to short " + this._audio.getDuration() + "ms " + this._minimalRecordingTime);
                 }
             }
         },
