@@ -11,6 +11,9 @@ define([ "dojo/_base/declare" ], function(declare) {
         _startTime: 0,
 
         startRecording: function() {
+            if (this.localMedia) { // Need to release to fix first time loading after permission.
+                this.localMedia.release();
+            }
             this.audioSrc = this.fileName.replace("{date}", Date.now()) + "." + this.getExtension();
             this.localMedia = new Media(this.audioSrc,
                 this.onSuccessRecord.bind(this),
