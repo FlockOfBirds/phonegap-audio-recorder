@@ -1,4 +1,4 @@
-define([ "dojo/_base/declare" ], function(declare) {
+define([ "dojo/_base/declare", "dojo/_base/lang" ], function(declare, dojoLang) {
     "use strict";
 
     var Audio = declare("AudioRecorder.widget.Audio", [], {
@@ -11,17 +11,47 @@ define([ "dojo/_base/declare" ], function(declare) {
         _startTime: 0,
 
         startRecording: function() {
-            if (this.localMedia) { // Need to release to fix first time loading after permission.
-                this.localMedia.release();
-            }
             this.audioSrc = this.fileName.replace("{date}", Date.now()) + "." + this.getExtension();
-            this.localMedia = new Media(this.audioSrc,
-                this.onSuccessRecord.bind(this),
-                this.onErrorRecord.bind(this),
-                this.setMediaStatus.bind(this)
-            );
             this._startTime = Date.now();
-            this.localMedia.startRecord();
+
+            if (device.platform === "Android") {
+                // Need to release to fix first time loading after permission is set.
+                if (this.localMedia) {
+                    this.localMedia.release();
+                }
+                this.localMedia = new Media(this.audioSrc,
+                    this.onSuccessRecord.bind(this),
+                    this.onErrorRecord.bind(this),
+                    this.setMediaStatus.bind(this)
+                );
+                this.localMedia.startRecord();
+            } else if (device.platform === "iOS") {
+                this.getFileIOS(dojoLang.hitch(this, function() {
+                    this.localMedia = new Media(this.audioSrc,
+                        this.onSuccessRecord.bind(this),
+                        this.onErrorRecord.bind(this),
+                        this.setMediaStatus.bind(this)
+                    );
+                    this.localMedia.startRecord();
+                }));
+            }
+        },
+
+        getFileIOS: function(callback) {
+            window.requestFileSystem(LocalFileSystem.TEMPORARY, 0,
+                dojoLang.hitch(this, function(fileSystem) {
+                    logger.debug("fileSystem.root.name: " + fileSystem.root.name);
+                    fileSystem.root.getFile(this.audioSrc, { create: true, exclusive: false },
+                        function() {
+                            callback();
+                        }, function(error) {
+                            logger.error("failed in getting the created media file", error);
+                        }
+                    );
+                }), function(error) {
+                    logger.error("failed in creating media file in requestFileSystem", error);
+                }
+            );
         },
 
         getExtension: function() {
