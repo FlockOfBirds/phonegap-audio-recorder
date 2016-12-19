@@ -11,6 +11,10 @@ define([
         buttonLabel: "",
         buttonClass: "",
         onSaveMicroflow: "",
+        iconClassDefault: "",
+        iconClassRecording: "",
+        iconClassProcessing: "",
+        iconClassCanceled: "",
         // Internal settings
         _cancelAnimationTime: 1500,
         _minimalRecordingTime: 200,
@@ -32,7 +36,7 @@ define([
                 renderType: "button",
                 caption: this.buttonLabel,
                 iconUrl: "",
-                iconClass: "",
+                iconClass: this.iconClassDefault,
                 cssClasses: this._widgetCssClass + " " + this.buttonClass,
                 cssStyle: ""
             });
@@ -56,20 +60,29 @@ define([
         _setupEvents: function() {
             logger.debug(this.id + "._setupEvents");
             this.connect(this.domNode, touch.press, dojoLang.hitch(this, function() { // "mousedown"
+                logger.debug(this.id + "._setupEvents: touch.press");
                 this._startRecording();
                 this._leaveHandler = this.connect(this.domNode, touch.leave, dojoLang.hitch(this, function() { // "mouseleave"
-                    this._leaveHandler.remove();
-                    this._leaveHandler = null;
-                    this._cancelRecording();
+                    logger.debug(this.id + "._setupEvents: touch.leave");
+                    if (this._leaveHandler) {
+                        this._leaveHandler.remove();
+                        this._leaveHandler = null;
+                        this._cancelRecording();
+                    }
                 }));
             }));
-            this.connect(this.domNode, touch.release, dojoLang.hitch(this, function() { // "mouseup"
-                if (this._leaveHandler) {
-                    this._leaveHandler.remove();
-                    this._leaveHandler = null;
-                }
-                this._stopRecording();
-            }));
+
+            this.connect(this.domNode, touch.release, dojoLang.hitch(this, this._handleStop));
+            this.connect(this.domNode, "mouseup", dojoLang.hitch(this, this._handleStop));
+        },
+
+        _handleStop: function() {
+            logger.debug(this.id + "._handleStop");
+            if (this._leaveHandler) {
+                this._leaveHandler.remove();
+                this._leaveHandler = null;
+            }
+            this._stopRecording();
         },
 
         _startRecording: function() {
@@ -78,6 +91,7 @@ define([
                 navigator.vibrate(this._vibrationTime);
                 this._recordingStarted = true;
                 dojoClass.add(this.domNode, "recording");
+                this._button._setIcon(this.iconClassRecording, true);
                 this._audio.startRecording();
             }
         },
@@ -102,6 +116,7 @@ define([
                 this._audio.stopRecording();
                 if (this._audio.getDuration() > this._minimalRecordingTime) {
                     dojoClass.add(this.domNode, "processing");
+                    this._button._setIcon(this.iconClassProcessing, true);
                     // this._audio.playRecording(); // For testing only
                     var testUrl = this._audio.getUrl(),
                         upload = new Upload();
@@ -110,9 +125,11 @@ define([
                         this._executeMicroflow(dojoLang.hitch(this, function() {
                             logger.debug("executed Microflow");
                             dojoClass.remove(this.domNode, "processing");
+                            this._button._setIcon(this.iconClassDefault, true);
                         }));
                     }));
                 } else {
+                    this._button._setIcon(this.iconClassDefault, true);
                     logger.debug("Recording to short " + this._audio.getDuration() + "ms " + this._minimalRecordingTime);
                 }
             }
@@ -125,8 +142,10 @@ define([
             dojoClass.remove(this.domNode, "recording");
 
             dojoClass.add(this.domNode, "recording-canceled");
+            this._button._setIcon(this.iconClassCanceled, true);
             setTimeout(dojoLang.hitch(this, function() {
                 dojoClass.remove(this.domNode, "recording-canceled");
+                this._button._setIcon(this.iconClassDefault, true);
             }), this._cancelAnimationTime);
         },
 

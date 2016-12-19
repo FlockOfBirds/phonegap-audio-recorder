@@ -5,7 +5,7 @@
     <icon/>
     <phonegap enabled="true"/>
     <properties>
-        <property key="buttonLabel" type="string" required="true">
+        <property key="buttonLabel" type="string" required="false">
             <caption>Label</caption>
             <category>Button</category>
             <description/>
@@ -20,6 +20,26 @@
             <category>Events</category>
             <description/>
             <returnType type="Void"/>
+        </property>
+        <property key="iconClassDefault" type="string" required="false">
+            <caption>Icon default2</caption>
+            <category>Display</category>
+            <description/>
+        </property>
+        <property key="iconClassRecording" type="string" required="false">
+            <caption>Icon recording</caption>
+            <category>Display</category>
+            <description/>
+        </property>
+        <property key="iconClassProcessing" type="string" required="false">
+            <caption>Icon Processing</caption>
+            <category>Display</category>
+            <description/>
+        </property>
+        <property key="iconClassCanceled" type="string" required="false">
+            <caption>Icon Canceled</caption>
+            <category>Display</category>
+            <description/>
         </property>
     </properties>
 </widget>

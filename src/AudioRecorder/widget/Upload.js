@@ -3,7 +3,7 @@ define([ "dojo/_base/declare" ], function(declare) {
 
     var Upload = declare("AudioRecorder.widget.Upload", [], {
         sendFile: function(guid, fileUrl, callback) {
-            logger.debug(this.id + "._sendFile");
+            logger.debug("AudioRecorder.widget.Upload.sendFile");
             var self = this,
                 filename = (/[^\/]*$/).exec(fileUrl)[0];
             if (window.mx.data.saveDocument && window.mx.data.saveDocument.length === 6) {
@@ -22,7 +22,7 @@ define([ "dojo/_base/declare" ], function(declare) {
                 fileReader.onload = function(event) {
                     window.mx.data.saveDocument(guid, filename, {}, new Blob([ event.target.result ]),
                         function() {
-                            logger.debug(self.id + "._sendFile.success");
+                            logger.debug("saveDocument.success");
                             if (callback) {
                                 callback();
                             }
