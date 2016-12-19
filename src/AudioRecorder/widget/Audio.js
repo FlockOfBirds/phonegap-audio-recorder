@@ -4,7 +4,6 @@ define([ "dojo/_base/declare", "dojo/_base/lang" ], function(declare, dojoLang) 
     var Audio = declare("AudioRecorder.widget.Audio", [], {
         localMedia: null,
         fileName: "Recording_{date}",
-        fileExtension: "wav",
         audioSrc: "",
         fileCallback: null,
         _duration: 0,
@@ -34,6 +33,8 @@ define([ "dojo/_base/declare", "dojo/_base/lang" ], function(declare, dojoLang) 
                     );
                     this.localMedia.startRecord();
                 }));
+            } else {
+                window.mx.ui.error("Device platform: '" + device.platform + "' is not supported");
             }
         },
 
@@ -55,7 +56,11 @@ define([ "dojo/_base/declare", "dojo/_base/lang" ], function(declare, dojoLang) 
         },
 
         getExtension: function() {
-            return this.fileExtension;
+            if (device.platform === "Android") {
+                return "3gp";
+            }
+            // else the platform is iOS
+            return "wav";
         },
 
         setMediaStatus: function(status) {
