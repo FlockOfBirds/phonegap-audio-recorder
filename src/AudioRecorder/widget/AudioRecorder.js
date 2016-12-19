@@ -49,11 +49,24 @@ define([
             this._setupEvents();
         },
 
-        update: function(object, callback) {
+        update: function(contextObject, callback) {
             logger.debug(this.id + ".update");
-            this._contextObject = object;
+            this._contextObject = contextObject;
+            if (contextObject) {
+                this._button.enable();
+            } else {
+                this._button.disable();
+            }
+
             if (callback) {
                 callback();
+            }
+        },
+
+        uninitialize: function() {
+            this._audio.cancelRecording();
+            if (this._button) {
+                this._button.destroy();
             }
         },
 
