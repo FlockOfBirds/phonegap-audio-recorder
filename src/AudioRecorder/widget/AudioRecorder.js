@@ -5,7 +5,6 @@ define([
 ], function(_WidgetBase, mxuiDom, dojoClass, declare, dojoLang, touch, Audio, Upload, Button) {
     "use strict";
 
-    // Declare widget"s prototype.
     return declare("AudioRecorder.widget.AudioRecorder", [ _WidgetBase ], {
         // Modeler properties
         buttonLabel: "",
@@ -18,6 +17,7 @@ define([
         // Internal settings
         _cancelAnimationTime: 1500,
         _minimalRecordingTime: 200,
+        _permissionTestTimeout: 200,
         _vibrationTime: 50,
         // Internal properties
         _hasStarted: false,
@@ -106,6 +106,13 @@ define([
                 dojoClass.add(this.domNode, "recording");
                 this._button._setIcon(this.iconClassRecording, true);
                 this._audio.startRecording();
+                setTimeout(dojoLang.hitch(this, function() {
+                    if (this._audio.getMediaStatus() === 0) {
+                        logger.debug(this.id + "._startRecording: Need confirm state change within " +
+                            this._permissionTestTimeout + "ms else the permissions are not set: cancel");
+                        this._cancelRecording();
+                    }
+                }, this._permissionTestTimeout));
             }
         },
 
