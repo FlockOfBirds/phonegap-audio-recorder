@@ -16,7 +16,13 @@
             <description/>
         </property>
         <property key="onSaveMicroflow" type="microflow" required="false">
-            <caption>Save microflow</caption>
+            <caption>On save microflow</caption>
+            <category>Events</category>
+            <description/>
+            <returnType type="Void"/>
+        </property>
+        <property key="onSaveNanoflow" type="nanoflow" required="false">
+            <caption>On save nanoflow</caption>
             <category>Events</category>
             <description/>
             <returnType type="Void"/>

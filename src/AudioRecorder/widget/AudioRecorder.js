@@ -10,6 +10,7 @@ define([
         buttonLabel: "",
         buttonClass: "",
         onSaveMicroflow: "",
+        onSaveNanoflow: "",
         iconClassDefault: "",
         iconClassRecording: "",
         iconClassProcessing: "",
@@ -178,6 +179,17 @@ define([
                         guids: [ this._contextObject.getGuid() ]
                     },
                     callback: callback
+                });
+            }
+
+            if (this.onSaveNanoflow && this.mxcontext) {
+                mx.data.callNanoflow({
+                    nanoflow: this.onSaveNanoflow,
+                    origin: this.mxform,
+                    context: this.mxcontext,
+                    error: function (error) {
+                        mx.ui.error("Error executing nanoflow " + this.onSaveNanoflow + " : " + error.message);
+                    }
                 });
             }
         }

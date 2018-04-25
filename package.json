@@ -1,10 +1,9 @@
 {
   "name": "phonegap-audio-recorder",
   "widgetName": "AudioRecorder",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Record audio while pressing button",
-  "copyright": "Flock of Birds",
-  "author": "Guy Acellam",
+  "copyright": "Mendix BV",
   "private": true,
   "dependencies": {},
   "devDependencies": {
