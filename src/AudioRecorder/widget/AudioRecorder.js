@@ -182,13 +182,13 @@ define([
                 });
             }
 
-            if (this.onSaveNanoflow && this.mxcontext) {
+            if (this.onSaveNanoflow.nanoflow && this.mxcontext) {
                 mx.data.callNanoflow({
                     nanoflow: this.onSaveNanoflow,
                     origin: this.mxform,
                     context: this.mxcontext,
                     error: function (error) {
-                        mx.ui.error("Error executing nanoflow " + this.onSaveNanoflow + " : " + error.message);
+                        mx.ui.error("An error occurred while executing the on save nanoflow:" + error.message);
                     }
                 });
             }

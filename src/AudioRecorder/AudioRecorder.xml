@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <widget id="AudioRecorder.widget.AudioRecorder" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
-    <name>Phonegap audio recorder</name>
+    <name>Audio recorder</name>
     <description>Creates a button to use the audio recorder functionality</description>
     <icon/>
     <phonegap enabled="true"/>
