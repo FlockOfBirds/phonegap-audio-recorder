@@ -143,7 +143,7 @@ define([
                         upload = new Upload();
                     upload.sendFile(this._contextObject.getGuid(), testUrl, dojoLang.hitch(this, function() {
                         logger.debug("Upload completed");
-                        this._executeMicroflow(dojoLang.hitch(this, function() {
+                        this._executeAction(dojoLang.hitch(this, function() {
                             logger.debug("executed Microflow");
                             dojoClass.remove(this.domNode, "processing");
                             this._button._setIcon(this.iconClassDefault, true);
@@ -170,8 +170,8 @@ define([
             }), this._cancelAnimationTime);
         },
 
-        _executeMicroflow: function(callback) {
-            logger.debug(this.id + "._executeMicroflow", this.onSaveMicroflow);
+        _executeAction: function(callback) {
+            logger.debug(this.id + "._executeAction", this.onSaveMicroflow);
             if (this.onSaveMicroflow && this._contextObject) {
                 mx.ui.action(this.onSaveMicroflow, {
                     params: {
