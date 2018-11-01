@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <widget id="AudioRecorder.widget.AudioRecorder" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
-    <name>Phonegap audio recorder</name>
+    <name>Audio recorder</name>
     <description>Creates a button to use the audio recorder functionality</description>
     <icon/>
     <phonegap enabled="true"/>
@@ -16,7 +16,13 @@
             <description/>
         </property>
         <property key="onSaveMicroflow" type="microflow" required="false">
-            <caption>Save microflow</caption>
+            <caption>On save microflow</caption>
+            <category>Events</category>
+            <description/>
+            <returnType type="Void"/>
+        </property>
+        <property key="onSaveNanoflow" type="nanoflow" required="false">
+            <caption>On save nanoflow</caption>
             <category>Events</category>
             <description/>
             <returnType type="Void"/>
